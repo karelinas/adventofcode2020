@@ -6,7 +6,7 @@ Full solution for Advent of Code 2020, day 02
 
 Run with:
 
-    python3 day02.py < day02-input.txt
+    python3 main.py < input.txt
 """
 
 import re

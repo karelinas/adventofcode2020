@@ -6,7 +6,7 @@ Full solution for Advent of Code 2020, day 01
 
 Run with:
 
-    python3 day01.py < day01-input.txt
+    python3 main.py < input.txt
 """
 
 from sys import stdin
