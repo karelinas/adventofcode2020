@@ -14,37 +14,26 @@ from operator import mul
 from sys import stdin
 
 
-def is_tree(grid, x, y):
-    width = len(grid[0])
-    return grid[y][x%width] == '#'
-
-
 def tree_count(grid, path):
-    return [is_tree(grid, x, y) for x, y in path].count(True)
+    return sum(grid[y][x] for x, y in path)
 
 
-def simple_path(dx, dy, height):
+def xwrapping_path(vx, vy, width, height):
     x, y = 0, 0
     while y < height:
-        yield (x, y)
-        x = x + dx
-        y = y + dy
+        yield (x%width, y)
+        x, y = x+vx, y+vy
 
 
 def product(lst):
     return reduce(mul, lst, 1)
 
 
-grid = [line.strip() for line in stdin]
-height = len(grid)
+cell_values = {'.': 0, '#': 1}
+grid = [[cell_values.get(ch) for ch in line.strip()] for line in stdin]
+size = (len(grid[0]), len(grid))
 
-print("Part one:", tree_count(grid, simple_path(3, 1, height)))
+print("Part one:", tree_count(grid, xwrapping_path(3, 1, *size)))
 
-slopes = [
-    (1, 1),
-    (3, 1),
-    (5, 1),
-    (7, 1),
-    (1, 2)
-]
-print("Part two:", product([tree_count(grid, simple_path(dx, dy, height)) for dx, dy in slopes]))
+slopes = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)]
+print("Part two:", product(tree_count(grid, xwrapping_path(*v, *size)) for v in slopes))
