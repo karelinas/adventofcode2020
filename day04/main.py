@@ -45,7 +45,8 @@ def fields_exist(passport, required_fields):
 
 
 def valid_passport(passport, required_fields):
-    validators = defaultdict(lambda _: False,
+    default_validator = lambda _: True
+    validators = defaultdict(lambda: default_validator,
         {
             'byr': IntValidator(1920, 2002),
             'iyr': IntValidator(2010, 2020),
@@ -53,8 +54,7 @@ def valid_passport(passport, required_fields):
             'hgt': HeightValidator(),
             'hcl': RegexValidator(r'^#[0-9a-f]{6}$'),
             'ecl': RegexValidator(r'^(amb|blu|brn|gry|grn|hzl|oth)$'),
-            'pid': RegexValidator(r'^\d{9}$'),
-            'cid': lambda _: True
+            'pid': RegexValidator(r'^\d{9}$')
         }
     )
     return (fields_exist(passport, required_fields) and
