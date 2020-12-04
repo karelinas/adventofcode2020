@@ -11,6 +11,7 @@ Run with:
 
 from collections import defaultdict
 from itertools import takewhile
+from re import match
 from sys import stdin
 
 
@@ -32,27 +33,11 @@ class HeightValidator:
         return False
 
 
-class HairColorValidator:
-    allowed_characters = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-                          'a', 'b', 'c', 'd', 'e', 'f')
-
+class RegexValidator:
+    def __init__(self, regex):
+        self.regex = regex
     def __call__(self, value):
-        return (len(value) == 7 and value[0] == '#' and
-                all(ch in self.allowed_characters for ch in value[1:]))
-
-
-class EyeColorValidator:
-    valid_eyecolors = ('amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth')
-
-    def __call__(self, value):
-        return value in self.valid_eyecolors
-
-
-class PassportIdValidator:
-    allowed_characters = ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9')
-
-    def __call__(self, value):
-        return len(value) == 9 and all(ch in self.allowed_characters for ch in value)
+        return bool(match(self.regex, value))
 
 
 class CountryIdValidator:
@@ -76,9 +61,9 @@ def valid_passport(passport, required_fields):
             'iyr': IntValidator(2010, 2020),
             'eyr': IntValidator(2020, 2030),
             'hgt': HeightValidator(),
-            'hcl': HairColorValidator(),
-            'ecl': EyeColorValidator(),
-            'pid': PassportIdValidator(),
+            'hcl': RegexValidator(r'^#[0-9a-f]{6}$'),
+            'ecl': RegexValidator(r'^(amb|blu|brn|gry|grn|hzl|oth)$'),
+            'pid': RegexValidator(r'^\d{9}$'),
             'cid': CountryIdValidator()
         }
     )
