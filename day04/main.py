@@ -40,22 +40,12 @@ class RegexValidator:
         return bool(match(self.regex, value))
 
 
-class CountryIdValidator:
-    def __call__(self, value):
-        return True
-
-
-class DefaultValidator:
-    def __call__(self, value):
-        return False
-
-
 def fields_exist(passport, required_fields):
     return all(field in passport for field in required_fields)
 
 
 def valid_passport(passport, required_fields):
-    validators = defaultdict(DefaultValidator,
+    validators = defaultdict(lambda _: False,
         {
             'byr': IntValidator(1920, 2002),
             'iyr': IntValidator(2010, 2020),
@@ -64,7 +54,7 @@ def valid_passport(passport, required_fields):
             'hcl': RegexValidator(r'^#[0-9a-f]{6}$'),
             'ecl': RegexValidator(r'^(amb|blu|brn|gry|grn|hzl|oth)$'),
             'pid': RegexValidator(r'^\d{9}$'),
-            'cid': CountryIdValidator()
+            'cid': lambda _: True
         }
     )
     return (fields_exist(passport, required_fields) and
