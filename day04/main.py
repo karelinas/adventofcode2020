@@ -24,20 +24,25 @@ class IntValidator:
         return value >= self.minvalue and value <= self.maxvalue
 
 
-class HeightValidator:
-    def __call__(self, value):
-        if value.endswith('cm'):
-            return IntValidator(150, 193)(value[:-2])
-        elif value.endswith('in'):
-            return IntValidator(59, 76)(value[:-2])
-        return False
-
-
 class RegexValidator:
-    def __init__(self, regex):
+    def __init__(self, regex, *group_validators):
         self.regex = regex
+        self.group_validators = group_validators
     def __call__(self, value):
-        return bool(match(self.regex, value))
+        mo = match(self.regex, value)
+        if not mo:
+            return False
+        return all(
+            validator(group)
+            for validator, group in zip(self.group_validators, mo.groups())
+        )
+
+
+class AnyOf:
+    def __init__(self, *validators):
+        self.validators = validators
+    def __call__(self, value):
+        return any(validator(value) for validator in self.validators)
 
 
 def fields_exist(passport, required_fields):
@@ -51,7 +56,8 @@ def valid_passport(passport, required_fields):
             'byr': IntValidator(1920, 2002),
             'iyr': IntValidator(2010, 2020),
             'eyr': IntValidator(2020, 2030),
-            'hgt': HeightValidator(),
+            'hgt': AnyOf(RegexValidator(r'^(\d+)cm$', IntValidator(150, 193)),
+                         RegexValidator(r'^(\d+)in$', IntValidator(59, 76))),
             'hcl': RegexValidator(r'^#[0-9a-f]{6}$'),
             'ecl': RegexValidator(r'^(amb|blu|brn|gry|grn|hzl|oth)$'),
             'pid': RegexValidator(r'^\d{9}$')
