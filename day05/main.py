@@ -12,29 +12,10 @@ Run with:
 from sys import stdin
 
 
-def lower_half(r):
-    return (r[0], (r[0]+r[1])//2)
-
-
-def upper_half(r):
-    return ((r[0]+r[1])//2+1, r[1])
-
-
-def seat_id(boardingpass, region=None):
-    if not region:
-        region = [(0, 127), (0, 7)]
-    if not boardingpass:
-        return region[0][0] * 8 + region[1][0]
-    char = boardingpass[0]
-    if char == 'F':
-        region[0] = lower_half(region[0])
-    elif char == 'B':
-        region[0] = upper_half(region[0])
-    elif char == 'L':
-        region[1] = lower_half(region[1])
-    elif char == 'R':
-        region[1] = upper_half(region[1])
-    return seat_id(boardingpass[1:], region)
+def seat_id(boardingpass):
+    row = int(boardingpass[:7].replace('F', '0').replace('B', '1'), 2)
+    column = int(boardingpass[7:].replace('L', '0').replace('R', '1'), 2)
+    return row*8 + column
 
 
 boardingpasses = (line.strip() for line in stdin)
