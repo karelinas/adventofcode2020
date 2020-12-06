@@ -4,7 +4,7 @@
 """
 Full solution for Advent of Code 2020, day 03
 
-Run with:
+Usage:
 
     python3 main.py < input.txt
 """
