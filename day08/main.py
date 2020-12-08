@@ -13,50 +13,45 @@ from re import match
 from sys import stdin
 
 
-def op(line):
+class Cpu:
+    instructions = {
+        'nop': lambda pc, acc, arg: (pc+1, acc),
+        'acc': lambda pc, acc, arg: (pc+1, acc+arg),
+        'jmp': lambda pc, acc, arg: (pc+arg, acc)
+    }
+
+    @classmethod
+    def run(cls, program):
+        pc, acc = 0, 0
+        seen = set()
+        while pc < len(program) and pc not in seen:
+            seen.add(pc)
+            pc, acc = cls.instructions[program[pc][0]](pc, acc, program[pc][1])
+        return (pc not in seen, acc)
+
+
+def instruction(line):
     operator, operand = match(r'^(\w+) ([+-]*\d+)$', line).groups()
     return (operator, int(operand))
 
 
-def run(ops):
-    pc = 0
-    acc = 0
-    seen = set()
-    while pc < len(ops):
-        op = ops[pc]
-        if pc in seen:
-            return (False, acc)
-        seen.add(pc)
-        if op[0] == 'nop':
-            pass
-        elif op[0] == 'acc':
-            acc += op[1]
-        elif op[0] == 'jmp':
-            pc += op[1]
-            continue
-        pc += 1
-    return (True, acc)
-
-
 def swap_operator(ops, pos):
-    ops = ops.copy()
-    op = list(ops[pos])
-    if op[0] == 'jmp':
-        op[0] = 'nop'
-    elif op[0] == 'nop':
-        op[0] = 'jmp'
-    return ops[:pos] + [tuple(op)] + ops[pos+1:]
+    swap_map = {
+        'jmp': 'nop',
+        'nop': 'jmp',
+        'acc': 'acc'
+    }
+    return ops[:pos] + [(swap_map[ops[pos][0]], ops[pos][1])] + ops[pos+1:]
 
 
-program = [op(line) for line in stdin]
+program = [instruction(line) for line in stdin]
 
-terminated, acc = run(program)
+terminated, acc = Cpu.run(program)
 print("Part one:", acc)
 
 for i in range(len(program)):
-    modified_program = swap_operator(program, i)
-    terminated, acc = run(modified_program)
+    fix_candidate = swap_operator(program, i)
+    terminated, acc = Cpu.run(fix_candidate)
     if terminated:
         print("Part two:", acc)
         break
-
