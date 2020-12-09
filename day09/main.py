@@ -15,10 +15,11 @@ from itertools import combinations
 
 def encryption_weakness(nums, target):
     for start in range(len(nums)):
+        slice_sum = nums[start]
         for end in range(start+1, len(nums)):
-            slice_sum = sum(nums[start:end])
+            slice_sum += nums[end]
             if slice_sum == target:
-                return min(nums[start:end])+max(nums[start:end])
+                return min(nums[start:end+1])+max(nums[start:end+1])
             elif slice_sum > target:
                 break
     return None
