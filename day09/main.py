@@ -10,18 +10,14 @@ Usage:
 """
 
 from sys import stdin
-from itertools import combinations
+from itertools import combinations, takewhile
 
 
 def encryption_weakness(nums, target):
-    for start in range(len(nums)):
-        for end in range(start+1, len(nums)):
-            slice_sum = sum(nums[start:end])
-            if slice_sum == target:
-                return min(nums[start:end])+max(nums[start:end])
-            elif slice_sum > target:
-                break
-    return None
+    return next(min(nums[start:end]) + max(nums[start:end])
+                for start in range(len(nums))
+                for end in takewhile(lambda x: sum(nums[start:x]) <= target, range(start+1, len(nums)))
+                if sum(nums[start:end]) == target)
 
 
 SLICE_LEN = 25
