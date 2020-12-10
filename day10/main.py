@@ -11,21 +11,19 @@ Usage:
 
 from collections import Counter
 from functools import lru_cache
-from itertools import takewhile
 from sys import stdin
 
 
-def arrangement_count(adapters, latest=0):
+def arrangement_count(adapters):
     @lru_cache(maxsize=None)
-    def _impl(_latest):
-        if _latest == (len(adapters) - 1):
+    def _impl(n):
+        if n not in adapters:
+            return 0
+        elif n == adapters[-1]:
             return 1
-        return sum(_impl(next_adapter)
-                   for next_adapter
-                   in takewhile(lambda x: adapters[x] - adapters[_latest] <= 3,
-                                range(_latest+1, len(adapters))))
+        return sum(_impl(n) for n in [n+1, n+2, n+3])
 
-    return _impl(latest)
+    return _impl(0)
 
 
 adapters = [0] + sorted(int(line.strip()) for line in stdin)
