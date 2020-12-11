@@ -9,21 +9,16 @@ Usage:
     python3 main.py < input.txt
 """
 
-from collections import Counter
-from functools import lru_cache
+from collections import Counter, defaultdict
 from sys import stdin
 
 
 def arrangement_count(adapters):
-    @lru_cache(maxsize=None)
-    def _impl(n):
-        if n not in adapters:
-            return 0
-        elif n == adapters[-1]:
-            return 1
-        return sum(_impl(n) for n in [n+1, n+2, n+3])
-
-    return _impl(0)
+    counts = defaultdict(int)
+    counts[0] = 1
+    for n in adapters[1:]:
+        counts[n] = counts[n-1] + counts[n-2] + counts[n-3]
+    return counts[max(adapters)]
 
 
 adapters = [0] + sorted(int(line.strip()) for line in stdin)
