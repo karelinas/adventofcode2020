@@ -9,6 +9,7 @@ Usage:
     python3 main.py < input.txt
 """
 
+from functools import lru_cache
 from sys import stdin
 
 
@@ -37,6 +38,7 @@ def adjacent(grid, x, y):
             grid[x-1, y+1], grid[x, y+1], grid[x+1, y+1]]
 
 
+@lru_cache(maxsize=None)
 def vector_add(a, b):
     return tuple(an+bn for an, bn in zip(a, b))
 
