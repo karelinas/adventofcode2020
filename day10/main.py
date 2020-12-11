@@ -21,8 +21,8 @@ def arrangement_count(adapters):
     return counts[max(adapters)]
 
 
-adapters = [0] + sorted(int(line.strip()) for line in stdin)
-adapters.append(adapters[-1] + 3)
+adapters = sorted(map(int, stdin))
+adapters = [0] + adapters + [max(adapters) + 3]
 
 differences = Counter(b-a for a, b in zip(adapters, adapters[1:]))
 
