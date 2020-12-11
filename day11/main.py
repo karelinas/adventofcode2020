@@ -9,7 +9,7 @@ Usage:
     python3 main.py < input.txt
 """
 
-from functools import lru_cache
+from functools import lru_cache, partial
 from sys import stdin
 
 
@@ -33,9 +33,9 @@ def cell_seating(coords, cell, neighbors, tolerance):
 
 
 def adjacent(grid, x, y):
-    return [grid[x-1, y-1], grid[x, y-1], grid[x+1, y-1],
-            grid[x-1, y  ],               grid[x+1, y  ],
-            grid[x-1, y+1], grid[x, y+1], grid[x+1, y+1]]
+    return [(x-1, y-1), (x, y-1), (x+1, y-1),
+            (x-1, y  ),           (x+1, y  ),
+            (x-1, y+1), (x, y+1), (x+1, y+1)]
 
 
 @lru_cache(maxsize=None)
@@ -48,7 +48,7 @@ def line_of_sight(grid, x, y):
         pos = vector_add(pos, v)
         while pos in grid:
             if grid[pos] != Grid.FLOOR:
-                return grid[pos]
+                return pos
             pos = vector_add(pos, v)
         return None
 
@@ -61,15 +61,16 @@ def line_of_sight(grid, x, y):
 
 def seating_round(grid, neighbor_finder, tolerance):
     return Grid(
-        cell_seating((x, y), grid[x, y], neighbor_finder(grid, x, y), tolerance)
-        for x, y in list(grid.keys())
+        cell_seating((x, y), ch, [grid[pos] for pos in neighbor_finder(x, y)], tolerance)
+        for (x, y), ch in grid.items()
     )
 
 
 def stabilized(grid, neighbor_finder, tolerance):
+    cached_neighbors = lru_cache(maxsize=None)(partial(neighbor_finder, grid))
     previous = grid
     while True:
-        current = seating_round(previous, neighbor_finder, tolerance)
+        current = seating_round(previous, cached_neighbors, tolerance)
         if current == previous:
             break
         previous = current
