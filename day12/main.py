@@ -11,6 +11,9 @@ Usage:
 
 from sys import stdin
 
+def manhattan_distance(z):
+    return int(abs(z.real) + abs(z.imag))
+
 DIRECTIONS = {
     'N':  1j, # ( 0,  1)
     'S': -1j, # ( 0, -1)
@@ -23,32 +26,25 @@ ROTATIONS = {
     'R': -1j
 }
 
-instructions = list(map(lambda x: (x[0], int(x[1:])), stdin))
+instructions = map(lambda x: (x[0], int(x[1:])), stdin)
 
+# For part one
 facing = complex(DIRECTIONS['E'])
-position = complex()
-
-for action, value in instructions:
-    if action in DIRECTIONS:
-        position = position + value * complex(DIRECTIONS[action])
-    elif action in ROTATIONS:
-        facing = facing * (ROTATIONS[action] ** (value // 90))
-    elif action == 'F':
-        position = position + facing * value
-
-
-print("Part one:", int(abs(position.real) + abs(position.imag)))
-
-
-position = complex()
+pos1 = complex()
+# For part two
 waypoint = 10+1j
+pos2 = complex()
 
 for action, value in instructions:
     if action in DIRECTIONS:
+        pos1 = pos1 + value * complex(DIRECTIONS[action])
         waypoint = waypoint + value * complex(DIRECTIONS[action])
     elif action in ROTATIONS:
+        facing = facing * (ROTATIONS[action] ** (value // 90))
         waypoint = waypoint * (ROTATIONS[action] ** (value // 90))
     elif action == 'F':
-        position = position + waypoint * value
+        pos1 = pos1 + facing * value
+        pos2 = pos2 + waypoint * value
 
-print("Part two:", int(abs(position.real) + abs(position.imag)))
+print("Part one:", manhattan_distance(pos1))
+print("Part two:", manhattan_distance(pos2))
