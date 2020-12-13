@@ -29,7 +29,7 @@ def earliest_subsequent(bus_offsets):
     return timestamp
 
 
-timestamp = int(next(stdin).strip())
+timestamp = int(next(stdin))
 bus_offsets = [(offset, int(bus)) for offset, bus in enumerate(next(stdin).split(',')) if bus != 'x']
 
 print("Part one:", next_to_leave(timestamp, [bus for _, bus in bus_offsets]))
