@@ -21,7 +21,19 @@ class Instruction:
     MEMSET = 1
 
 
-class PartOne:
+class Common:
+    @classmethod
+    def instruction(cls, line):
+        mo = match(r'^mask = ([01X]+)$', line)
+        if mo:
+            return (Instruction.MASK, cls.mask(mo.group(1)))
+        mo = match(r'^mem\[(\d+)\] = (\d+)$', line)
+        if mo:
+            return (Instruction.MEMSET, cls.memset(int(mo.group(1)), int(mo.group(2))))
+        return (INVALID, None)
+
+
+class PartOne(Common):
     @staticmethod
     def mask(maskstr):
         def apply_mask(data):
@@ -37,18 +49,8 @@ class PartOne:
             mem[addr] = mask(val)
         return apply_memset
 
-    @classmethod
-    def instruction(cls, line):
-        mo = match(r'^mask = ([01X]+)$', line)
-        if mo:
-            return (Instruction.MASK, cls.mask(mo.group(1)))
-        mo = match(r'^mem\[(\d+)\] = (\d+)$', line)
-        if mo:
-            return (Instruction.MEMSET, cls.memset(int(mo.group(1)), int(mo.group(2))))
-        return (INVALID, None)
 
-
-class PartTwo:
+class PartTwo(Common):
     @staticmethod
     def mask(maskstr):
         def maskstr_replace(maskstr, xlist):
@@ -67,16 +69,6 @@ class PartTwo:
             for a in mask(addr):
                 mem[a] = val
         return apply_memset
-
-    @classmethod
-    def instruction(cls, line):
-        mo = match(r'^mask = ([01X]+)$', line)
-        if mo:
-            return (Instruction.MASK, cls.mask(mo.group(1)))
-        mo = match(r'^mem\[(\d+)\] = (\d+)$', line)
-        if mo:
-            return (Instruction.MEMSET, cls.memset(int(mo.group(1)), int(mo.group(2))))
-        return (INVALID, None)
 
 
 def run(program):
