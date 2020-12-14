@@ -9,7 +9,6 @@ Usage:
     python3 main.py < input.txt
 """
 
-from functools import reduce
 from itertools import product
 from re import match
 from sys import stdin
@@ -53,15 +52,18 @@ class PartOne(Common):
 class PartTwo(Common):
     @staticmethod
     def mask(maskstr):
-        def maskstr_replace(maskstr, xlist):
-            return reduce(lambda s, x: s.replace('X', x, 1), xlist, maskstr)
+        def replace_xs(s, xlist):
+            for x in xlist:
+                s = s.replace('X', x, 1)
+            return s
 
-        def resolve(addr):
-            xcount = maskstr.count('X')
-            addr = ''.join([a if x == '0' else x for a, x in zip(bin(addr)[2:].zfill(len(maskstr)), maskstr)])
-            return [int(maskstr_replace(addr, xs), 2) for xs in product(['0', '1'], repeat=xcount)]
+        def resolve_addresses(addr):
+            binary_addr = bin(addr)[2:].zfill(len(maskstr))
+            addr = ''.join(a if x == '0' else x for a, x in zip(binary_addr, maskstr))
+            return [int(replace_xs(addr, xs), 2)
+                    for xs in product(['0', '1'], repeat=maskstr.count('X'))]
 
-        return resolve
+        return resolve_addresses
 
     @staticmethod
     def memset(addr, val):
