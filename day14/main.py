@@ -30,7 +30,7 @@ class Common:
         mo = match(r'^mem\[(\d+)\] = (\d+)$', line)
         if mo:
             return (Instruction.MEMSET, cls.memset(int(mo.group(1)), int(mo.group(2))))
-        return (INVALID, None)
+        return (Instruction.INVALID, None)
 
 
 class PartOne(Common):
