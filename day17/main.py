@@ -9,7 +9,7 @@ Usage:
     python3 main.py < input.txt
 """
 
-from collections import defaultdict
+from collections import Counter
 from itertools import product
 from operator import add
 from sys import stdin
@@ -34,10 +34,7 @@ def adjacent(vec):
 
 def simulate(active_cubes):
     # Neighbor counts for all cells
-    neighbors = defaultdict(int)
-    for vec in active_cubes:
-        for pos in adjacent(vec):
-            neighbors[pos] += 1
+    neighbors = Counter(pos for vec in active_cubes for pos in adjacent(vec))
 
     # Resolve active cubes
     return {
