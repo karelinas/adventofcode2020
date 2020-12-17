@@ -9,45 +9,45 @@ Usage:
     python3 main.py < input.txt
 """
 
+from collections import defaultdict
 from itertools import product
-from functools import lru_cache
 from operator import add
 from sys import stdin
 
 
-def vec_add(a, b):
-    return tuple(map(add, a, b))
-
-
-@lru_cache(maxsize=None)
-def surrounding(vec):
+def adjacent(vec):
     origin = tuple(0 for _ in range(len(vec)))
     return set(
-        vec_add(vec, delta)
-        for delta in product(*[range(-1, 2) for _ in range(len(vec))])
+        tuple(map(add, vec, delta))
+        for delta in product(*[[-1, 0, 1] for _ in range(len(vec))])
         if delta != origin
     )
 
 
-def count_active_around(cubes, vec):
-    return len(set.intersection(surrounding(vec), cubes))
-
-
 def simulate(active_cubes):
-    new_cubes = set()
+    # Neighbor counts for all cells
+    neighbors = defaultdict(int)
     for vec in active_cubes:
-        # check if this cube should be activated
-        if 2 <= count_active_around(active_cubes, vec) <= 3:
-            new_cubes.add(vec)
-        # check if any inactive cubes adjacent to this cube should be activated
-        for adjacent in surrounding(vec):
-            if adjacent not in active_cubes and count_active_around(active_cubes, adjacent) == 3:
-                new_cubes.add(adjacent)
+        for pos in adjacent(vec):
+            neighbors[pos] += 1
+
+    # Resolve active cubes
+    new_cubes = set()
+    for pos, count in neighbors.items():
+        if count == 3:
+            new_cubes.add(pos)
+        elif count == 2 and pos in active_cubes:
+            new_cubes.add(pos)
     return new_cubes
 
 
 if __name__ == '__main__':
-    CUBES2D = {(x, y) for y, line in enumerate(stdin) for x, ch in enumerate(line.strip()) if ch == '#'}
+    CUBES2D = {
+        (x, y)
+        for y, line in enumerate(stdin)
+        for x, ch in enumerate(line.strip())
+        if ch == '#'
+    }
 
     # Part 1: 3D simulation
     cubes3d = {(x, y, 0) for x, y in CUBES2D}
