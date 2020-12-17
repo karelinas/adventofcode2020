@@ -40,6 +40,10 @@ def simulate(active_cubes):
     }
 
 
+def chain_call(N, f, *args):
+    return f(*args) if N <= 1 else f(chain_call(N-1, f, *args))
+
+
 if __name__ == '__main__':
     # Read input
     CUBES2D = {
@@ -50,13 +54,9 @@ if __name__ == '__main__':
     }
 
     # Part 1: 3D simulation
-    cubes3d = {(x, y, 0) for x, y in CUBES2D}
-    for _ in range(6):
-        cubes3d = simulate(cubes3d)
-    print("Part one:", len(cubes3d))
+    CUBES3D = {(x, y, 0) for x, y in CUBES2D}
+    print("Part two:", len(chain_call(6, simulate, CUBES3D)))
 
     # Part 2: 4D simulation
-    cubes4d = {(x, y, 0, 0) for x, y in CUBES2D}
-    for _ in range(6):
-        cubes4d = simulate(cubes4d)
-    print("Part two:", len(cubes4d))
+    CUBES4D = {(x, y, 0, 0) for x, y in CUBES2D}
+    print("Part two:", len(chain_call(6, simulate, CUBES4D)))
