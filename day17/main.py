@@ -19,15 +19,11 @@ def vector_add(v1, v2):
     return tuple(map(add, v1, v2))
 
 
-def adjacency_vectors(dimension):
-    return product(*[[-1, 0, 1] for _ in range(dimension)])
-
-
 def adjacent(vec):
     origin = tuple(0 for _ in range(len(vec)))
     return {
         vector_add(vec, delta)
-        for delta in adjacency_vectors(len(vec))
+        for delta in product([-1, 0, 1], repeat=len(vec))
         if delta != origin
     }
 
