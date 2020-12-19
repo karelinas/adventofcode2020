@@ -4,9 +4,7 @@
 """
 Full solution for Advent of Code 2020, day 15
 
-Usage:
-
-    python3 main.py
+Usage: python3 main.py
 """
 
 from collections import deque

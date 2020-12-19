@@ -4,9 +4,7 @@
 """
 Full solution for Advent of Code 2020, day 10
 
-Usage:
-
-    python3 main.py < input.txt
+Usage: python3 main.py < input.txt
 """
 
 from collections import Counter, defaultdict
